@@ -1,0 +1,188 @@
+﻿@model Order
+@inject WMS_Assignment.Models.DB db
+
+@{
+    ViewData["Title"] = "Your Order & Cart";
+    var tableId = Model?.Table?.Id ?? Model?.TableId ?? "T01";
+    var hasItems = Model != null && Model.OrderDetails != null && Model.OrderDetails.Any();
+    var totalAmount = Model?.TotalAmount ?? 0;
+    var tables = db.Tables.ToList();
+}
+<div class="cart-page-container">
+    <div class="cart-header-title">
+        <h2>🛍️ Your Order</h2>
+        @if (hasItems)
+        {
+            <span class="table-badge">📍 Table: <strong>@tableId</strong></span>
+        }
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-warning" style="background: #fdf3e6; color: #8a6d3b; padding: 12px 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #faebcc; font-weight: 500;">
+            ⚠️ @TempData["Error"]
+        </div>
+    }
+
+    @if (hasItems)
+    {
+        <div class="cart-grid-layout">
+            <!-- Left Side: Order Items List -->
+            <div class="cart-items-card">
+                <div class="cart-table-wrapper">
+                    <table class="cart-custom-table">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Subtotal</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var od in Model!.OrderDetails!)
+                            {
+                                var menuItem = od.MenuItem;
+                                string itemId = Convert.ToString(menuItem?.Id ?? "").Trim();
+                                string categoryName = menuItem?.Category?.Name ?? "Drink / Dessert";
+
+                                string fallbackSvg = categoryName.Contains("Main", StringComparison.OrdinalIgnoreCase) || itemId.StartsWith("M", StringComparison.OrdinalIgnoreCase)
+                                    ? "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><style>.bowl{animation:bounce 2s ease-in-out infinite;}@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}</style><circle cx='100' cy='100' r='90' fill='%23f9f3ec'/><g class='bowl'><path d='M50 110 Q100 150 150 110 Z' fill='%23e5a96a'/><ellipse cx='100' cy='110' rx='50' ry='15' fill='%23d08c47'/><path d='M70 90 Q100 70 130 90' stroke='%23fff' stroke-width='4' fill='none' stroke-linecap='round'/></g><text x='50% ' y='170' text-anchor='middle' fill='%238a7b6b' font-family='sans-serif' font-size='14' font-weight='bold'>🍲 Fresh Dish</text></svg>"
+                                    : categoryName.Contains("Side", StringComparison.OrdinalIgnoreCase) || itemId.StartsWith("S", StringComparison.OrdinalIgnoreCase)
+                                    ? "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><style>.plate{animation:pulse 2s ease-in-out infinite;}@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.05);}}</style><circle cx='100' cy='100' r='90' fill='%23f9f3ec'/><circle class='plate' cx='100' cy='100' r='55' fill='%23e5a96a'/><circle cx='100' cy='100' r='40' fill='%23f9f3ec'/><text x='50%' y='170' text-anchor='middle' fill='%238a7b6b' font-family='sans-serif' font-size='14' font-weight='bold'>🥗 Side Snack</text></svg>"
+                                    : "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><style>.steam{animation:rise 2s ease-in-out infinite;}.cup{animation:tilt 3s ease-in-out infinite; transform-origin:center;}@keyframes rise{0%{transform:translateY(0); opacity:1;}100%{transform:translateY(-15px); opacity:0;}}@keyframes tilt{0%,100%{transform:rotate(0deg);}50%{transform:rotate(5deg);}}</style><circle cx='100' cy='100' r='90' fill='%23f9f3ec'/><g class='cup'><path d='M70 90 h60 v40 a20 20 0 0 1-20 20 h-20 a20 20 0 0 1-20-20 z' fill='%23e5a96a'/><path d='M130 100 h10 a10 10 0 0 1 10 10 v10 a10 10 0 0 1-10 10 h-10' stroke='%23e5a96a' stroke-width='6' fill='none'/></g><path class='steam' d='M90 70 q5 -10 0 -20' stroke='%23d08c47' stroke-width='3' fill='none' stroke-linecap='round'/><path class='steam' d='M110 75 q-5 -10 0 -20' stroke='%23d08c47' stroke-width='3' fill='none' stroke-linecap='round'/><text x='50%' y='170' text-anchor='middle' fill='%238a7b6b' font-family='sans-serif' font-size='14' font-weight='bold'>☕ Warm Brew</text></svg>";
+
+                                string photoUrl = fallbackSvg;
+                                string directRaw = menuItem?.PhotoURL?.Replace("\\", "/").Trim();
+                                if (!string.IsNullOrWhiteSpace(directRaw))
+                                {
+                                    string resolvedRaw = directRaw.StartsWith("~/") ? directRaw : (directRaw.StartsWith("/") ? directRaw : "~/" + directRaw.TrimStart('/'));
+                                    photoUrl = Url.Content(resolvedRaw);
+                                }
+
+                                <tr>
+                                    <td>
+                                        <div class="cart-item-meta">
+                                            <div class="cart-item-img-container" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; background: #f9f3ec; border-radius: 8px; overflow: hidden; flex-shrink: 0; position: relative;">
+                                                <img src="@photoUrl"
+                                                     alt="@menuItem?.Name"
+                                                     class="cart-item-img"
+                                                     style="width: 100%; height: 100%; object-fit: cover; position: relative; z-index: 2;"
+                                                     onerror="this.onerror=null; this.src='@fallbackSvg';" />
+                                            </div>
+                                            <div>
+                                                <div class="cart-item-name">@(menuItem?.Name ?? "Food Item")</div>
+                                                <small class="cart-item-cat">@categoryName</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="unit-price">RM @od.UnitPrice.ToString("0.00")</td>
+                                    <td>
+                                        <form asp-action="UpdateQuantity" method="post" class="cart-qty-form">
+                                            <input type="hidden" name="orderDetailId" value="@od.Id" />
+                                            <div class="qty-counter">
+                                                <button type="button" class="qty-btn" onclick="adjustCartQty(this, -1)">-</button>
+                                                <input type="number" name="quantity" class="qty-input" value="@od.Quantity" min="1" max="99" onchange="this.form.submit()" />
+                                                <button type="button" class="qty-btn" onclick="adjustCartQty(this, 1)">+</button>
+                                            </div>
+                                        </form>
+                                    </td>
+                                    <td class="subtotal-price">RM @od.SubTotal.ToString("0.00")</td>
+                                    <td>
+                                        <form asp-action="RemoveItem" method="post">
+                                            <input type="hidden" name="orderDetailId" value="@od.Id" />
+                                            <button type="submit" class="btn-remove-item" title="Remove item">
+                                                🗑️
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="cart-footer-links">
+                    <a href="/Product/Menu" class="btn-continue-shopping">
+                        ← Add More Food
+                    </a>
+                </div>
+            </div>
+
+            <!-- Right Side: Order Summary Card -->
+            <div class="cart-summary-card">
+                <h3 class="summary-heading">Order Summary</h3>
+
+                <div class="summary-line">
+                    <span>Items Count:</span>
+                    <strong>@(Model.OrderDetails?.Sum(d => d.Quantity) ?? 0) item(s)</strong>
+                </div>
+
+                <div class="summary-line" style="flex-direction: column; align-items: flex-start; gap: 8px; margin-bottom: 15px;">
+                    <span>Select Table Number:</span>
+                    <div style="display: flex; gap: 6px; flex-wrap: wrap; width: 100%;">
+                        @foreach (var t in tables)
+                        {
+                            var isSelected = t.Id == tableId;
+                            var btnBg = isSelected ? "#d08c47" : "#f4ece1";
+                            var btnColor = isSelected ? "#ffffff" : "#332920";
+
+                            <form asp-action="UpdateTable" method="post" style="margin: 0;">
+                                <input type="hidden" name="orderId" value="@Model.Id" />
+                                <input type="hidden" name="tableId" value="@t.Id" />
+                                <button type="submit" style="background: @btnBg; color: @btnColor; border: 1px solid #dcd0c0; padding: 5px 10px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                                    @t.Id
+                                </button>
+                            </form>
+                        }
+                    </div>
+                </div>
+
+                <div class="summary-line">
+                    <span>Service & Taxes:</span>
+                    <strong class="tax-free-text">RM 0.00 (Included)</strong>
+                </div>
+
+                <div class="summary-divider"></div>
+
+                <div class="summary-total-line">
+                    <span>Total:</span>
+                    <span class="total-amount">RM @totalAmount.ToString("0.00")</span>
+                </div>
+
+                <a href="/Home/Checkout" class="checkout-link">
+                    <button type="button" class="btn-checkout-proceed">
+                        Proceed to Checkout ➔
+                    </button>
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="empty-cart-box">
+            <div class="empty-cart-icon">🛒</div>
+            <h3>Your cart is empty!</h3>
+            <p>You haven't added any delicious food or drinks yet.</p>
+            <a href="/Product/Menu" class="add-to-cart-btn btn-browse-menu">
+                Browse Menu
+            </a>
+        </div>
+    }
+</div>
+
+@section foot {
+    <script>
+        function adjustCartQty(button, delta) {
+            const form = button.closest('form');
+            const input = form.querySelector('.qty-input');
+            let currentVal = parseInt(input.value) || 1;
+            let newVal = currentVal + delta;
+            if (newVal >= 1) {
+                input.value = newVal;
+                form.submit();
+            }
+        }
+    </script>
+}

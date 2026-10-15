@@ -1,0 +1,128 @@
+﻿@model MenuItemVM
+
+@{
+    ViewBag.Title = "Menu";
+}
+<div class="menu-page-container">
+    <div class="menu-controls">
+        <!-- Search Bar -->
+        <div class="search-box">
+            <i>🔍</i>
+            <input type="search"
+                   id="menuSearchInput"
+                   placeholder="Search For Product..."
+                   autocomplete="off"
+                   oninput="filterMenuItems()" />
+        </div>
+
+        <!-- Filter Chips -->
+        <div class="filter-chips">
+            <button type="button" class="chip active" data-category="" onclick="setCategoryFilter('', this)">
+                All
+            </button>
+            @foreach (var cat in Model.FoodCategories)
+            {
+                <button type="button" class="chip" data-category="@cat.Id" onclick="setCategoryFilter('@cat.Id', this)">
+                    @cat.Name
+                </button>
+            }
+        </div>
+
+        <!-- Price Range Inputs -->
+        <div class="price-filters">
+            <input type="number"
+                   id="minPriceInput"
+                   min="0"
+                   step="0.5"
+                   placeholder="Min (RM)"
+                   oninput="filterMenuItems()" />
+            <span>—</span>
+            <input type="number"
+                   id="maxPriceInput"
+                   min="0"
+                   step="0.5"
+                   placeholder="Max (RM)"
+                   oninput="filterMenuItems()" />
+        </div>
+    </div>
+
+    <!-- Target Cards Container -->
+    <div id="target">
+        <partial name="_A" model="Model" />
+    </div>
+</div>
+
+@section foot {
+    <script>
+        let activeCategory = '';
+        let debounceTimer;
+
+        function setCategoryFilter(categoryId, element) {
+            activeCategory = categoryId;
+
+            // Highlight active chip
+            document.querySelectorAll('.filter-chips .chip').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+
+            filterMenuItems();
+        }
+
+        function filterMenuItems() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                const search = document.getElementById('menuSearchInput').value || '';
+                const minPrice = document.getElementById('minPriceInput').value || '';
+                const maxPrice = document.getElementById('maxPriceInput').value || '';
+
+                const params = new URLSearchParams();
+                if (search) params.append('search', search);
+                if (minPrice) params.append('minPrice', minPrice);
+                if (maxPrice) params.append('maxPrice', maxPrice);
+                if (activeCategory) params.append('category', activeCategory);
+
+                fetch('/Product/Menu?' + params.toString(), {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                    .then(res => res.text())
+                    .then(html => {
+                        document.getElementById('target').innerHTML = html;
+                    })
+                    .catch(err => console.error('Filter request failed:', err));
+            }, 250);
+        }
+
+        function incrementQty(id) {
+            const input = document.getElementById('qty-' + id);
+            if (input) {
+                input.value = parseInt(input.value || 1) + 1;
+            }
+        }
+
+        function decrementQty(id) {
+            const input = document.getElementById('qty-' + id);
+            if (input && parseInt(input.value) > 1) {
+                input.value = parseInt(input.value) - 1;
+            }
+        }
+
+        function toggleFav(id, btn) {
+            fetch('/Product/ToggleFavorite?menuItemId=' + id, {
+                method: 'POST',
+                headers: {
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        btn.classList.toggle('active', data.isFavorite);
+                    } else if (data.message === 'Unauthorized') {
+                        window.location.href = '/Security/Login';
+                    }
+                })
+                .catch(err => console.error('Favorite toggle failed:', err));
+        }
+    </script>
+}

@@ -1,0 +1,75 @@
+﻿@model ProductInsertVM
+
+<div class="product-form-container">
+
+    <h2>Create Menu Item</h2>
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <form asp-action="Create" method="post" enctype="multipart/form-data">
+
+        <div class="form-photo-preview" id="photoPreviewContainer">
+          <img src="~/images/no-photo.png" alt="No photo" id="noPhotoPlaceholder" />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Name"></label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="description"></label>
+            <textarea asp-for="description" class="form-control"></textarea>
+            <span asp-validation-for="description" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Price"></label>
+            <input asp-for="Price" class="form-control" />
+            <span asp-validation-for="Price" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="CategoryId"></label>
+            <select asp-for="CategoryId" class="form-control"
+                    asp-items="@(new SelectList(Model.FoodCategories, "Id", "Name"))">
+                <option value="">-- Select Category --</option>
+            </select>
+            <span asp-validation-for="CategoryId" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Photos"></label>
+            <input asp-for="Photos" type="file" multiple accept="image/*" class="form-control" onchange="previewPhoto(event)" />            <small id="fileCountLabel" class="text-muted"></small>
+            <span asp-validation-for="Photos" class="text-danger"></span>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-action btn-create">Create</button>
+            <a asp-action="AdminMenu" asp-controller="Admin" class="btn-action btn-cancel">Cancel</a>
+        </div>
+
+    </form>
+
+</div>
+
+<script>
+        function previewPhoto(event) {
+        const files = event.target.files;
+        const container = document.getElementById('photoPreviewContainer');
+        container.innerHTML = '';
+
+    if (!files || files.length === 0) {
+        container.innerHTML = '<img src="/images/no-photo.png" alt="No photo" />';
+        return;
+    }
+
+    Array.from(files).forEach(file => {
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+            img.className = 'preview-thumb';
+            container.appendChild(img);
+        });
+    }
+</script>

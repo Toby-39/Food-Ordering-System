@@ -1,0 +1,178 @@
+﻿
+﻿@{
+    ViewBag.Title = "Login";
+}
+
+<div class="login-container">
+    <!-- Background Decorations -->
+    <div class="bg-decoration">
+        <div class="circle c1"></div>
+        <div class="circle c2"></div>
+        <div class="circle c3"></div>
+        <div class="food-emoji e1">🍽️</div>
+        <div class="food-emoji e2">☕</div>
+        <div class="food-emoji e3">🥘</div>
+    </div>
+
+    <!-- Login Card -->
+    <div class="login-card">
+        <!-- Header -->
+        <div class="login-header">
+            <div class="avatar-wrapper">
+                <div class="ring"></div>
+                <div class="avatar-inner">🍲</div>
+            </div>
+            <div class="welcome-badge">✨ Welcome Back</div>
+            <h1>
+                Welcome <span class="highlight">Back!</span>
+            </h1>
+            <p>Login to continue ordering your favorite food</p>
+        </div>
+
+        <!-- Login Form -->
+        <form action="/Security/Login" method="post" id="loginForm">
+            @Html.AntiForgeryToken()
+
+            @if (TempData["Success"] != null)
+            {
+                <div class="auth-success-box" style="background:#e8f5e9; color:#2e7d32; padding:10px 14px; border-radius:10px; margin-bottom:15px; font-size:0.875rem;">
+                    @TempData["Success"]
+                </div>
+            }
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="auth-error-box" style="background:#ffebee; color:#c62828; padding:10px 14px; border-radius:10px; margin-bottom:15px; font-size:0.875rem;">
+                    @ViewBag.Error
+                </div>
+            }
+
+            <div class="form-group">
+                <label for="username">
+                    <span class="label-icon">👤</span> Username
+                </label>
+                <div class="input-wrapper">
+                    <input type="text" id="username" name="Username"
+                           placeholder="Enter your username" required autocomplete="username" />
+                    <span class="input-icon">👤</span>
+                </div>
+                <div class="error-message" id="usernameError">
+                    Please enter your username
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">
+                    <span class="label-icon">🔒</span> Password
+                </label>
+                <div class="input-wrapper" style="position: relative;">
+                    <input type="password" id="password" name="Password"
+                           placeholder="Enter your password" required style="padding-right: 44px;" autocomplete="current-password" />
+                    <span class="input-icon">🔒</span>
+
+                    <!-- Show/Hide Password Button -->
+                    <button type="button" id="togglePasswordBtn" onclick="togglePasswordVisibility()"
+                            style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 0; color: #b09a88; z-index: 2;"
+                            aria-label="Toggle password visibility">
+                        👁️
+                    </button>
+                </div>
+                <div class="error-message" id="passwordError">
+                    Please enter your password
+                </div>
+            </div>
+
+            <div class="form-options">
+                <label class="remember-me">
+                    <input type="checkbox" name="rememberMe" value="true" checked />
+                    Remember me
+                </label>
+                <a href="/Security/forgotPassword" class="forgot-link">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="btn-login" id="loginBtn">
+                <span class="shimmer"></span>
+                <span class="btn-content">
+                    <span class="btn-text">Login</span>
+                    <span class="spinner"></span>
+                </span>
+            </button>
+        </form>
+
+        <!-- Register Link -->
+        <div class="register-link">
+            <span class="register-text">
+                Don't have an account? <a href="/Security/Register">Register Here</a>
+            </span>
+        </div>
+    </div>
+</div>
+
+<script>
+    function togglePasswordVisibility() {
+        const passwordField = document.getElementById('password');
+        const toggleBtn = document.getElementById('togglePasswordBtn');
+
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            toggleBtn.textContent = '🙈';
+        } else {
+            passwordField.type = 'password';
+            toggleBtn.textContent = '👁️';
+        }
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        const username = document.getElementById('username');
+        const password = document.getElementById('password');
+        const usernameError = document.getElementById('usernameError');
+        const passwordError = document.getElementById('passwordError');
+        const loginBtn = document.getElementById('loginBtn');
+        let isValid = true;
+
+        username.classList.remove('error');
+        password.classList.remove('error');
+        usernameError.classList.remove('show');
+        passwordError.classList.remove('show');
+
+        if (!username.value.trim()) {
+            username.classList.add('error');
+            usernameError.classList.add('show');
+            isValid = false;
+        }
+
+        if (!password.value.trim()) {
+            password.classList.add('error');
+            passwordError.classList.add('show');
+            isValid = false;
+        }
+
+        if (!isValid) {
+            e.preventDefault();
+            return;
+        }
+
+        loginBtn.classList.add('loading');
+    });
+
+    document.querySelectorAll('.input-wrapper input').forEach(input => {
+        input.addEventListener('focus', function() {
+            const icon = this.parentElement.querySelector('.input-icon');
+            if (icon) icon.style.transform = 'translateY(-50%) scale(1.1)';
+        });
+
+        input.addEventListener('blur', function() {
+            const icon = this.parentElement.querySelector('.input-icon');
+            if (icon) icon.style.transform = 'translateY(-50%) scale(1)';
+        });
+    });
+
+    document.querySelectorAll('.input-wrapper input').forEach(input => {
+        input.addEventListener('input', function() {
+            this.classList.remove('error');
+            const errorMsg = this.closest('.form-group').querySelector('.error-message');
+            if (errorMsg) errorMsg.classList.remove('show');
+        });
+    });
+</script>
+
