@@ -1,0 +1,194 @@
+﻿.admin-menu-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 24px;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* Header */
+.admin-menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+    .admin-menu-header h2 {
+        color: #2d2a26;
+        font-weight: 800;
+        font-size: 1.5rem;
+        margin: 0;
+        position: relative;
+        padding-left: 14px;
+    }
+
+        .admin-menu-header h2::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 4px;
+            bottom: 4px;
+            width: 5px;
+            background: #d97736;
+            border-radius: 4px;
+        }
+
+/* Buttons */
+.btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 18px;
+    border-radius: 22px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn-create {
+    background: linear-gradient(135deg, #e8834e, #d97736);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(217, 119, 54, 0.3);
+}
+
+    .btn-create:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(217, 119, 54, 0.4);
+        color: #fff;
+    }
+
+.btn-delete {
+    background-color: #fff0ee;
+    color: #e05252;
+    border: 1px solid #f5c6c0;
+}
+
+    .btn-delete:hover {
+        background-color: #e05252;
+        color: #fff;
+        border-color: #e05252;
+    }
+
+.btn-update {
+    background-color: #fdf6f0;
+    color: #d97736;
+    border: 1px solid #fed7aa;
+}
+
+    .btn-update:hover {
+        background-color: #d97736;
+        color: #fff;
+        border-color: #d97736;
+    }
+
+/* Table */
+.admin-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+    .admin-table th {
+        text-align: left;
+        padding: 16px 18px;
+        background: linear-gradient(135deg, #fdf1e7, #fdf6f0);
+        color: #2d2a26;
+        font-weight: 700;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-bottom: 2px solid #fed7aa;
+    }
+
+    .admin-table td {
+        padding: 14px 18px;
+        font-size: 14px;
+        color: #4a4a4a;
+        border-bottom: 1px solid #f2f2f2;
+        vertical-align: middle;
+    }
+
+    .admin-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .admin-table tbody tr {
+        transition: background-color 0.15s ease;
+    }
+
+        .admin-table tbody tr:hover {
+            background-color: #fffaf5;
+        }
+
+            .admin-table tbody tr:hover td:first-child {
+                box-shadow: inset 3px 0 0 #d97736;
+            }
+
+    /* Item name column */
+    .admin-table td:nth-child(2) {
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    /* Price column */
+    .admin-table td:nth-child(4) {
+        font-weight: 700;
+        color: #d97736;
+    }
+
+    /* Radio button */
+    .admin-table input[type="radio"] {
+        width: 16px;
+        height: 16px;
+        accent-color: #d97736;
+        cursor: pointer;
+    }
+
+/* Quantity input */
+.admin-qty-input {
+    width: 65px;
+    padding: 6px 10px;
+    border: 1.5px solid #fed7aa;
+    border-radius: 8px;
+    font-size: 13px;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+    .admin-qty-input:focus {
+        border-color: #d97736;
+        box-shadow: 0 0 0 3px rgba(217, 119, 54, 0.12);
+    }
+
+.delete-form {
+    display: inline-block;
+    margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .admin-menu-container {
+        padding: 0 12px;
+    }
+
+    .admin-menu-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .admin-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}

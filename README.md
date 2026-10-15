@@ -1,14 +1,77 @@
-Food Ordering System 
+# WMS Restaurant Ordering System
 
-A full-featured Food Ordering System developed as a group assignment project (`G3_DFT2S1G6`). This application streamlines the food ordering process, allowing users to browse menus, manage orders, and handle backend administrative tasks.
+## Overview
+A comprehensive in-dining restaurant ordering system built with ASP.NET Core MVC, Entity Framework Core, and SQL Server Express.
 
- Features
-User Authentication & Management: Secure login and registration.
-Menu Browsing: View available food items and categories.
-Order Processing: Place, track, and manage food orders.
-Admin Dashboard: Manage menu items, system configurations, and order statuses.
+## Features
 
-Tech Stack
-Backend/Framework: .NET / C# 
-Database: SQL Server / LocalDb
-IDE: Microsoft Visual Studio 2026
+### Core Modules
+1. **User Authentication & Authorization**
+   - Role-based access (Admin, Staff, Customer)
+   - Registration, Login, Logout
+   - Password validation
+   - Account lockout after failed attempts
+
+2. **Menu Management**
+   - CRUD operations for menu items
+   - Category management
+   - Search and filter
+   - Availability toggle
+
+3. **Order Management**
+   - Create new orders
+   - View order history
+   - Order status tracking
+   - Table assignment
+
+4. **Table Management**
+   - Table status tracking
+   - Capacity management
+   - Occupancy management
+
+5. **Admin Dashboard**
+   - Overview statistics
+   - User management
+   - Sales reports
+   - Kitchen view
+
+### Additional Features
+- AJAX for real-time updates
+- Client-side and server-side validation
+- Responsive Bootstrap UI
+- Toast notifications
+- Export to CSV
+- Print functionality
+- Dark mode toggle
+- Keyboard shortcuts
+- Interactive menu selection
+
+## Technologies Used
+- ASP.NET Core MVC (.NET 10)
+- Entity Framework Core
+- SQL Server Express
+- Bootstrap 5
+- jQuery
+- FontAwesome Icons
+
+## Installation
+
+### Prerequisites
+- Visual Studio 2022 or later
+- .NET 10 SDK
+- SQL Server Express
+- SQL Server Management Studio (optional)
+
+### Setup Steps
+1. Clone the repository
+2. Open the solution in Visual Studio
+3. Update the connection string in `appsettings.json`
+4. Run migrations: `dotnet ef database update`
+5. Run the application: `dotnet run`
+
+### Default Login Credentials
+- **Admin**: admin@restaurant.com / admin123
+- **Staff**: staff@restaurant.com / staff123  
+- **Customer**: customer@restaurant.com / customer123
+
+## Project Structure
